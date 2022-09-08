@@ -27,7 +27,6 @@ parser.add_argument("-t", "--entrenar", action="store_true", help="Especifica si
 parser.add_argument("-re", "--reanudar", action="store_true", help="Especifica si está en modo de reanudar el entrenamiento del modelo")
 parser.add_argument("-k", "--kfold", action="store", dest="kf", help="Especifica un numero entero para el número de k fold en el que se quedó el entrenamiento.")
 parser.add_argument("-s", "--segmentar", action="store_true", help="Especifica si está en modo para segmentar las imágenes de prueba, tomando como base el modelo previamente creado")
-parser.add_argument("-e", "--estrellas", action="store_true", help="Especifica si está utilizando el programa para segmentación de estrellas, debe utilizarse junto con -t o -s")
 parser.add_argument("-o", "--extendidos", action="store_true", help="Especifica si está utilizando el programa para segmentación de objetos extendidos, debe utilizarse junto con -t o -s")
 args = parser.parse_args()
 #parser.print_help()
@@ -72,30 +71,17 @@ elif args.entrenar:
     print("Entrenar...")
     lista_epochs = [30]
     lista_dropout = [0.2, 0.4]
-    if args.estrellas:
-        print("Estrellas...")
-        lista_optimizador = ['Adam']
-        lista_init_mode = ['normal']
-        lista_filtro = [0]
-        if args.reanudar:
-            kf = int(args.kf)
-            conv = Conv(None, None, None, None)
-            conv.fit_generador_estrellas_reanudar(kf)
-        else:
-            conv = Conv(lista_epochs, lista_optimizador, lista_init_mode, lista_filtro, lista_dropout)
-            conv.fit_generador_estrellas()
-    elif args.extendidos:
-        print("Objetos extendidos...")
-        lista_optimizador = ['Adam']
-        lista_init_mode = ['he_normal']
-        lista_filtro = [3]
-        if args.reanudar:
-            kf = int(args.kf)
-            conv = Conv(None, None, None, None, None)
-            conv.fit_generador_reanudar(kf)
-        else:
-            conv = Conv(lista_epochs, lista_optimizador, lista_init_mode, lista_filtro, lista_dropout)
-            conv.fit_generador()
+    print("Objetos extendidos...")
+    lista_optimizador = ['Adam']
+    lista_init_mode = ['he_normal']
+    lista_filtro = [3]
+    if args.reanudar:
+        kf = int(args.kf)
+        conv = Conv(None, None, None, None, None)
+        conv.fit_generador_reanudar(kf)
+    else:
+        conv = Conv(lista_epochs, lista_optimizador, lista_init_mode, lista_filtro, lista_dropout)
+        conv.fit_generador()
 elif args.segmentar:
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
     print("Segmentar...")
@@ -103,18 +89,11 @@ elif args.segmentar:
     aumentar = Aumentar()
     conv = Conv(None, None, None, None, None)
     batch_size = 1
-    if args.estrellas:
-        print("Estrellas...")
-        IMAGENES_PRUEBAS = os.getcwd() + '\\pruebas_estrellas'
-        FOLDER_IMAGENES = IMAGENES_PRUEBAS + '/' + args.dir_imagenes
-        FOLDER_MODELO = os.getcwd() + '/modelo_estrellas'
-        FOLDER_RESULTADOS = os.getcwd() + '/resultados_estrellas'
-    elif args.extendidos:
-        print("Objetos extendidos...")
-        IMAGENES_PRUEBAS = os.getcwd() + '\\pruebas'
-        FOLDER_IMAGENES = IMAGENES_PRUEBAS + '/' + args.dir_imagenes
-        FOLDER_MODELO = os.getcwd() + '/modelo'
-        FOLDER_RESULTADOS = os.getcwd() + '/resultados'
+    print("Objetos extendidos...")
+    IMAGENES_PRUEBAS = os.getcwd() + '\\pruebas'
+    FOLDER_IMAGENES = IMAGENES_PRUEBAS + '/' + args.dir_imagenes
+    FOLDER_MODELO = os.getcwd() + '/modelo'
+    FOLDER_RESULTADOS = os.getcwd() + '/resultados'
     lista_imagenes = sorted(list(paths.list_images(FOLDER_IMAGENES)))
     num_imagenes = len(lista_imagenes)
     print("Número de imágenes de prueba: " + str(num_imagenes))
