@@ -36,4 +36,46 @@ python principal.py -p -pf -d imagenes <br>
 Para entrenar: <br>
 python principal.py -t -o -d imagenes_entrenar <br>
 Para segmentar: <br>
-python principal.py -s -o -d imagenes_prueba <br>
+python principal.py -s -o -d imagenes_prueba <br><br>
+
+Nebula Recognition<br>
+
+Thesis project: Automated recognition of planetary nebulae
+
+The main objective of the thesis was the application of image segmentation techniques for the extended object segmentation problem applied to astronomy. The main hypothesis is whether artificial neural networks are capable of detecting such objects, additionally it was necessary to apply preprocessing to remove noise, remove CCD errors, remove the background of the image with PFCM and reduce high pixel values. (cut in the star value)<br>
+
+Extended Object Segmentation <br>
+
+Options to run it. <br>
+
+-p --preprocessing Specifies whether to be in image preprocessing mode. <br>
+-ef --remove_background Specifies whether the background is removed. <br>
+-zs --zscale Specifies whether to do a contrast adjustment, using the zscale algorithm. <br>
+-pr --percentile_range Specifies whether to do a contrast adjustment, using the percentile range algorithm. <br>
+-ap --arcsin_percentile Specifies whether to do a contrast adjustment, using the arcsin percentile algorithm. <br>
+-apr --arcsin_percentile_range Specifies whether to do a contrast adjustment, using the arcsin percentile range algorithm. <br>
+-pf --pfcm Specifies whether to remove the background with the PFCM algorithm. <br>
+-d --dir_images input directory. <br>
+-r --result_dir output directory. <br>
+-t --train Specifies whether you are in mode to train the model. <br>
+-k --kfold Specifies an integer for the number of k folds to train. <br>
+-s --segment Specifies whether it is in mode to segment the test images, based on the previously created model. <br>
+-o --extended Specifies if you are using the program for extended object segmentation, must be used in conjunction with -t or -s. <br>
+
+Example: <br>
+For preprocessing: <br>
+Apply contrast adjustment with zscale <br>
+python principal.py -p -zs -d images <br>
+Apply contrast adjustment with percentile range <br>
+python principal.py -p -pr -d images <br>
+Apply contrast adjustment with arcsin percentile <br>
+python principal.py -p -ap -d images <br>
+Apply contrast adjustment with arcsin percentile range<br>
+python principal.py -p -apr -d images <br>
+Remove background with PFCM<br>
+python principal.py -p -pf -d images <br>
+To train: <br>
+python principal.py -t -o -d images_train <br>
+To segment: <br>
+python principal.py -s -o -d test_images <br><br>
+
