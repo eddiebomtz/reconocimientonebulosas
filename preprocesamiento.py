@@ -26,9 +26,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 class preprocesamiento:
     def __init__(self, ruta, tiff):
-        #self.ruta = ruta
-        #self.nombre = nombre
-        #rutacompleta = ruta + "/" + nombre
         if ruta != None:
             self.imagenobj = Imagen()
             if tiff:
@@ -82,7 +79,6 @@ class preprocesamiento:
         skylevel = data["skylevel"][idrun]
         skynoise = data["skynoise"][idrun]
         threshold = skylevel + skynoise + (sigma * 3)
-        #+ (sigma * 2)
         mascara[mascara <= threshold] = 0
         mascara[mascara > 0] = 1
         mascara = mascara.astype('uint16')
@@ -90,8 +86,6 @@ class preprocesamiento:
         original = original.astype('uint16')
         self.imagenprocesada = original
     def elimina_fondo_tif(self):
-        #sigma = self.sigma()
-        #threshold = sigma * 10
         threshold = 2000
         original = self.imagenprocesada
         mascara = original.copy().astype(float)
@@ -111,11 +105,9 @@ class preprocesamiento:
         nans = np.count_nonzero(np.isnan(mascara))
         kernel = Gaussian2DKernel(1)
         imagenreconstruida = interpolate_replace_nans(mascara, kernel)
-        print("Nans: " + str(nans))
         while nans > 0:
             imagenreconstruida = interpolate_replace_nans(imagenreconstruida, kernel)
             nans = np.count_nonzero(np.isnan(imagenreconstruida))
-            print("Reconstruyendo, nans: " + str(nans))
         imagenreconstruida = imagenreconstruida * 65535
         imagenreconstruida = imagenreconstruida.astype('uint16')
         self.imagenprocesada = imagenreconstruida
@@ -162,22 +154,17 @@ class preprocesamiento:
         IEEE Transactions on Pattern Analysis and Machine Intelligence, 
         12(7):629-639, July 1990.
         """
-        # ...you could always diffuse each color channel independently if you
-        # really want
         if img.ndim == 3:
             warnings.warn("Only grayscale images allowed, converting to 2D matrix")
             img = img.mean(2)
-        # initialize output array
         img = img.astype('float64')
         imgout = img.copy()
-        # initialize some internal variables
         deltaS = np.zeros_like(imgout)
         deltaE = deltaS.copy()
         NS = deltaS.copy()
         EW = deltaS.copy()
         gS = np.ones_like(imgout)
         gE = gS.copy()
-        # create the plot figure, if requested
         if ploton:
             import pylab as pl
             fig = pl.figure(figsize=(20,5.5),num="Anisotropic diffusion")
@@ -188,7 +175,6 @@ class preprocesamiento:
             ax2.set_title("Iteration 0")
             fig.canvas.draw()
         for ii in np.arange(1,niter):
-            # calculate the diffs
             deltaS[:-1,: ] = np.diff(imgout,axis=0)
             deltaE[: ,:-1] = np.diff(imgout,axis=1)
             if 0<sigma:
@@ -197,30 +183,24 @@ class preprocesamiento:
             else: 
                 deltaSf=deltaS;
                 deltaEf=deltaE;	
-            # conduction gradients (only need to compute one per dim!)
             if option == 1:
                 gS = np.exp(-(deltaSf/kappa)**2.)/step[0]
                 gE = np.exp(-(deltaEf/kappa)**2.)/step[1]
             elif option == 2:
                 gS = 1./(1.+(deltaSf/kappa)**2.)/step[0]
                 gE = 1./(1.+(deltaEf/kappa)**2.)/step[1]
-            # update matrices
             E = gE*deltaE
             S = gS*deltaS
-            # subtract a copy that has been shifted 'North/West' by one
-            # pixel. don't as questions. just do it. trust me.
             NS[:] = S
             EW[:] = E
             NS[1:,:] -= S[:-1,:]
             EW[:,1:] -= E[:,:-1]
-            # update the image
             imgout += gamma*(NS+EW)
             if ploton:
                 iterstring = "Iteration %i" %(ii+1)
                 ih.set_data(imgout)
                 ax2.set_title(iterstring)
                 fig.canvas.draw()
-                # sleep(0.01)
         self.imagenprocesada = imgout
         return imgout
     def zscale_range(self, contrast=0.25, num_points=600, num_per_row=120):
@@ -321,15 +301,12 @@ class preprocesamiento:
             else:
                 self.imagenprocesada = np.where(self.imagenprocesada > zmin, self.imagenprocesada, zmin)
                 self.imagenprocesada = np.where(self.imagenprocesada < zmax, self.imagenprocesada, zmax)
-            #self.imagenprocesada = (self.imagenprocesada - zmin) * (self.imagen.max() / (zmax - zmin))
             nonlinearity = 3.0
             nonlinearity = max(nonlinearity, 0.001)
             max_asinh = cmath.asinh(nonlinearity).real
             self.imagenprocesada = (self.imagen.max() / max_asinh) * (np.arcsinh((self.imagenprocesada - zmin) * (nonlinearity / (zmax - zmin))))
         elif tipo == 2:
-            #zmin, zmax = self.percentile_range(min_percent=3.0, max_percent=99.0, num_points=6000, num_per_row=350)
             zmin, zmax = self.percentile_range(min_percent=3.0, max_percent=99.5, num_points=6000, num_per_row=350)
-            #zmin, zmax = self.percentile_range(min_percent=3.0, max_percent=99.0, num_points=6000, num_per_row=350)
             if original:
                 self.imagenprocesada = np.where(self.imagen > zmin, self.imagen, zmin)
                 self.imagenprocesada = np.where(self.imagenprocesada < zmax, self.imagenprocesada, zmax)
@@ -371,7 +348,6 @@ class preprocesamiento:
             I = 2 * ((im - im.min()) / (im.max() - im.min())) - 1
             sigma = mad_std(I)
             I = self.anisodiff(I,100,80,0.075,(1,1),sigma,2)
-            #self.guardar_imagen_tif(ruta, nombre + "_anisodiff_", True)
             I = (I - I.min()) / (I.max() - I.min())
         else:
             I = (im - im.min()) / (im.max() - im.min()) 
@@ -469,8 +445,7 @@ class preprocesamiento:
                 color += grupos_colores[c]*U[c,n]
             colores.append(color)
         
-        labels = np.argmax(U, axis=0).reshape(im.shape[0], im.shape[1]) # assing each pixel to its closest cluster
-        # creat an image with the assigned clusters
+        labels = np.argmax(U, axis=0).reshape(im.shape[0], im.shape[1])
         I = I.reshape(im.shape[0], im.shape[1])
         label0 = I[labels == 0]
         label1 = I[labels == 1]
@@ -506,41 +481,3 @@ class preprocesamiento:
         else:
             io.imsave(ruta + "/" + nombre + ".tif", self.imagen)
             return self.imagen
-from skimage.morphology import opening, closing, disk, square
-dir_imagenes = "pruebas/imagenes_prueba_2"
-dir_resultado = "pruebas/imagenes_prueba_pfcm_2"
-imagenes = os.listdir(dir_imagenes)
-for img in imagenes:
-    print(img)
-    pp = preprocesamiento(dir_imagenes + "/" + img, True)
-    pp.guardar_imagen_tif(dir_resultado, img + "_original.tif", True)
-    pp.autocontraste(4, False)
-    pp.guardar_imagen_tif(dir_resultado, img + "_percentile_range.tif", True)
-    imagen = pp.imagen
-    I = imagen.max() - imagen
-    I = I.astype("uint16")
-    io.imsave(dir_resultado + "/" + img + "_invertida.tif", I)
-    nuevaimagen = I - imagen
-    nuevaimagen = nuevaimagen.astype("uint16")
-    io.imsave(dir_resultado + "/" + img + "_resta_invertida.tif", nuevaimagen)
-    selem = disk(8)
-    closed = closing(nuevaimagen, selem)
-    io.imsave(dir_resultado + "/" + img + "_invertida_close_operation.tif", closed)
-    resultado = closed / imagen.max() * imagen
-    resultado = resultado.astype("uint16")
-    io.imsave(dir_resultado + "/" + img + "_invertida_otra_vez_close_operation.tif", resultado)
-    resultadoresta = resultado - imagen
-    resultadoresta = resultadoresta.astype("uint16")
-    io.imsave(dir_resultado + "/" + img + "_invertida_otra_vez_close_operation_resta.tif", resultadoresta)
-    pp.imagenprocesada = resultadoresta / imagen.max() * imagen
-    nuevaimagen = pp.imagenprocesada.astype("uint16")
-    io.imsave(dir_resultado + "/" + img + "_invertida_otra_vez_close_operation_resta_rango_dinamico.tif", nuevaimagen)
-    pp.pfcm_2(dir_resultado, img, anisodiff=True, median=False, gaussian=False)
-    imgproc = pp.imagenprocesada
-    pp.autocontraste(4, False)
-    pp.guardar_imagen_tif(dir_resultado, img + "_pfcm_2_percentile_range.tif", True)
-    pp.imagenprocesada = imgproc
-    pp.interpolacion_saturadas(1000)
-    pp.guardar_imagen_tif(dir_resultado, img + "_interpolacion_1000.tif", True)
-    pp.autocontraste(4, False)
-    pp.guardar_imagen_tif(dir_resultado, img + "_interpolacion_1000_autocontraste_percentile_range.tif", True)
