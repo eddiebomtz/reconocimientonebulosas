@@ -1,6 +1,8 @@
 # Reconocimiento Nebulosas
 Proyecto de tesis reconocimiento automatizado de nebulosas planetarias
 
+El objetivo principal de la tesis fue la aplicación de técnicas de segmentación de imágenes para el problema de segmentación de objetos extendidos aplicado a la astronomía. La principal hipótesis es si las redes neuronales artificiales son capaces de detectar dichos objetos, adicionalmente fue necesario aplicar preprocesamiento para eliminar el ruido, eliminar errores de CCD, eliminar el fondo de la imagen con PFCM y reducir los valores de píxel altos (corte en el valor de las estrellas). <br>
+
 Segmentación de objetos extendidos  <br>
 
 Opciones para ejecutarlo.  <br>
