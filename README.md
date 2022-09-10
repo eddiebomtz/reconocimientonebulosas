@@ -18,3 +18,20 @@ Opciones para ejecutarlo.  <br>
 -k --kfold Especifica un numero entero para el número de k fold en el que se quedó el entrenamiento.  <br>
 -s --segmentar Especifica si está en modo para segmentar las imágenes de prueba, tomando como base el modelo previamente creado.  <br>
 -o --extendidos Especifica si está utilizando el programa para segmentación de objetos extendidos, debe utilizarse junto con -t o -s.  <br>
+
+Ejemplo: <br>
+Para preprocesamiento: <br>
+Aplicar ajuste de contraste con zscale <br>
+python principal.py -p -zs -d imagenes_prueba <br>
+Aplicar ajuste de contraste con percentile range <br>
+python principal.py -p -pr -d imagenes_prueba <br>
+Aplicar ajuste de contraste con arcsin percentile <br>
+python principal.py -p -ap -d imagenes_prueba <br>
+Aplicar ajuste de contraste con arcsin percentile range<br>
+python principal.py -p -apr -d imagenes_prueba <br>
+Eliminar el fondo con PFCM<br>
+python principal.py -p -pf -d imagenes_prueba <br>
+Para entrenar: <br>
+python principal.py -t -o -d imagenes_prueba <br>
+Para segmentar: <br>
+python principal.py -s -o -d imagenes_prueba <br>
