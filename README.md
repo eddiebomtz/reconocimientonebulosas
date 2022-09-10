@@ -22,16 +22,16 @@ Opciones para ejecutarlo.  <br>
 Ejemplo: <br>
 Para preprocesamiento: <br>
 Aplicar ajuste de contraste con zscale <br>
-python principal.py -p -zs -d imagenes_prueba <br>
+python principal.py -p -zs -d imagenes <br>
 Aplicar ajuste de contraste con percentile range <br>
-python principal.py -p -pr -d imagenes_prueba <br>
+python principal.py -p -pr -d imagenes <br>
 Aplicar ajuste de contraste con arcsin percentile <br>
-python principal.py -p -ap -d imagenes_prueba <br>
+python principal.py -p -ap -d imagenes <br>
 Aplicar ajuste de contraste con arcsin percentile range<br>
-python principal.py -p -apr -d imagenes_prueba <br>
+python principal.py -p -apr -d imagenes <br>
 Eliminar el fondo con PFCM<br>
-python principal.py -p -pf -d imagenes_prueba <br>
+python principal.py -p -pf -d imagenes <br>
 Para entrenar: <br>
-python principal.py -t -o -d imagenes_prueba <br>
+python principal.py -t -o -d imagenes_entrenar <br>
 Para segmentar: <br>
 python principal.py -s -o -d imagenes_prueba <br>
